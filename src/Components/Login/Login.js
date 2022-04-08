@@ -2,8 +2,24 @@ import React from "react";
 import "./AuthForm.css";
 import GoogleLogo from "../../Assets/Image/google.svg";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../../firebase.init";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 const Login = () => {
+  const googleProvider = new GoogleAuthProvider();
+  const handleGoogleAuth = () => {
+
+    signInWithPopup(auth, googleProvider)
+      .then(res => {
+        const user = res.user
+        navigate('/')
+      })
+      .catch(error => {
+        console.error(error.message)
+        console.error(error.code)
+        console.error(error.email)
+      })
+  }
   const navigate = useNavigate();
 
   return (
@@ -37,7 +53,7 @@ const Login = () => {
           <div className='line-right' />
         </div>
         <div className='input-wrapper'>
-          <button className='google-auth'>
+          <button onClick={handleGoogleAuth} className='google-auth'>
             <img src={GoogleLogo} alt='' />
             <p> Continue with Google </p>
           </button>

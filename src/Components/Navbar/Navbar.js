@@ -3,9 +3,36 @@ import { NavLink } from "react-router-dom";
 import Logo from "../../Assets/Image/logo.png";
 import "./Navbar.css";
 import { useLocation } from "react-router-dom";
+import { auth } from "../../firebase.init";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 const Navbar = () => {
   const { pathname } = useLocation();
+  const [user, setUser] = useState({});
+
+  useEffect(()=>{
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user)
+        // ...
+      } else {
+        // User is signed out
+        // ...
+        setUser({})
+      }
+    });
+  },[])
+
+  const handleLogout = () => {
+    signOut(auth)
+    .then(() => {
+      // Sign-out successful.
+      console.log('logout')
+    })
+    .catch((error) => {
+      // An error happened.
+    });
+  }
 
   return (
     <nav
@@ -29,12 +56,12 @@ const Navbar = () => {
         >
           Videos
         </NavLink>
-        <NavLink
+        {user?.uid ? <button onClick={handleLogout} className='logout-button'>Logout</button> : <NavLink
           className={({ isActive }) => (isActive ? "active-link" : "link")}
           to='/login'
         >
           Login
-        </NavLink>
+        </NavLink>}
       </div>
     </nav>
   );

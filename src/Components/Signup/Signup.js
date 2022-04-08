@@ -1,35 +1,39 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import GoogleLogo from "../../Assets/Image/google.svg";
-import app from "../../firebase.init";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth } from "../../firebase.init";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
-const auth = getAuth(app);
+// const auth = getAuth(app);
 
 const Signup = () => {
   const googleProvider = new GoogleAuthProvider();
 
   const navigate = useNavigate();
-
+  // google popup function  
   const handleGoogleAuth = () => {
-    
-  signInWithPopup(auth, googleProvider)
-  .then(res =>{
-    const user = res.user
-    console.log(user)
-  })
-  .catch(error => {
-    console.error(error.message)
-    console.error(error.code)
-    console.error(error.email)
-  })
+    signInWithPopup(auth, googleProvider)
+      .then(res => {
+        const user = res.user
+        navigate('/')
+      })
+      .catch(error => {
+        console.error(error)
+      })
   }
 
+  const handleSignup = (event) => {
+    event.preventDefault()
+    const email = event.target.email.value
+    const password = event.target.password.value
+    console.log(email)
+    console.log(password)
+  }
   return (
     <div className='auth-form-container '>
       <div className='auth-form'>
         <h1>Sign Up</h1>
-        <form>
+        <form onSubmit={handleSignup}>
           <div className='input-field'>
             <label htmlFor='email'>Email</label>
             <div className='input-wrapper'>
