@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GoogleLogo from "../../Assets/Image/google.svg";
 import { auth } from "../../firebase.init";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword } from "firebase/auth";
 
-// const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
 const Signup = () => {
-  const googleProvider = new GoogleAuthProvider();
-
   const navigate = useNavigate();
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  console.log(email)
+
   // google popup function  
   const handleGoogleAuth = () => {
     signInWithPopup(auth, googleProvider)
@@ -21,13 +24,27 @@ const Signup = () => {
         console.error(error)
       })
   }
+  
+  const handleEmail = (event) => {
+    setEmail(event)
+  }
 
   const handleSignup = (event) => {
     event.preventDefault()
     const email = event.target.email.value
     const password = event.target.password.value
-    console.log(email)
-    console.log(password)
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        console.log(user)
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorMessage)
+      });
   }
   return (
     <div className='auth-form-container '>
@@ -37,7 +54,7 @@ const Signup = () => {
           <div className='input-field'>
             <label htmlFor='email'>Email</label>
             <div className='input-wrapper'>
-              <input type='email' name='email' id='email' />
+              <input onBlur={(event) => handleEmail(event.target.value)} type='email' name='email' id='email' />
             </div>
           </div>
           <div className='input-field'>
